@@ -124,7 +124,7 @@ def createaccount():
     return render_template('game.html')
 
 @app.route('/login')
-def createaccount():
+def login():
     return render_template('game.html')
 
 
