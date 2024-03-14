@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Classement des joueurs les plus actifs</title>
+</head>
+
+<style>
+    /* Body styling */
+    body {
+        min-height: 100vh;
+        margin: 0;
+        background: radial-gradient(ellipse at top, #f39264, #f2606f);
+        color: #fff;
+        font-family: 'Open Sans', sans-serif;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* Leaderboard styling */
+    .leaderboard {
+        width: 285px;
+        background: linear-gradient(#3a404d, #181c26);
+        border-radius: 10px;
+        box-shadow: 0 7px 30px rgba(62, 9, 11, .3);
+        padding: 20px;
+    }
+
+    .leaderboard h1 {
+        font-size: 18px;
+        color: #e1e1e1;
+        text-align: center;
+    }
+
+    .leaderboard ol {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+    }
+
+    .leaderboard li {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #fa6855;
+        border-radius: 5px;
+    }
+
+    .leaderboard li .name {
+        font-weight: bold;
+    }
+
+    .leaderboard li .score {
+        font-weight: light;
+    }
+</style>
+
+
+<body>
+    <div class="leaderboard">
+        <h1>
+            Joueurs les plus actifs
+        </h1>
+        <ol>
+            <li>
+                <div class="name">Jerry Wood</div>
+                <div class="score">315</div>
+            </li>
+            <li>
+                <div class="name">Brandon Barnes</div>
+                <div class="score">301</div>
+            </li>
+            <li>
+                <div class="name">Raymond Knight</div>
+                <div class="score">292</div>
+            </li>
+            <li>
+                <div class="name">Trevor McCormick</div>
+                <div class="score">245</div>
+            </li>
+            <li>
+                <div class="name">Andrew Fox</div>
+                <div class="score">203</div>
+            </li>
+        </ol>
+    </div>
+</body>
+
+</html>
