@@ -255,25 +255,27 @@
     }
 </style>
 
-<h2>Jeu Quiz avec Flask</h2>
+<h2>Jeu QuizGame avec Flask</h2>
 <div class="container" id="container">
     <div class="form-container sign-up-container">
-        <form action="#">
+        <form action="/createaccount" method="post">
             <h1>Créer un compte</h1>
 
-            <input type="text" placeholder="Nom" />
-            <input type="password" placeholder="Mot de passe" />
-            <button>S'inscrire</button>
+            <input type="text" name="username" placeholder="Nom" required />
+            <input type="password" name="password" placeholder="Mot de passe" required />
+            <button type="submit">S'inscrire</button>
         </form>
+
     </div>
     <div class="form-container sign-in-container">
-        <form action="#">
+        <form action="/login" method="post">
             <h1>Se connecter</h1>
 
-            <input type="password" placeholder="Mot de passe" />
-            <a href="#">Mot de passe oublié ?</a>
-            <button >Se connecter</button>
+            <input type="text" name="username" placeholder="Nom" required />
+            <input type="password" name="password" placeholder="Mot de passe" required />
+            <button type="submit">Se connecter</button>
         </form>
+
     </div>
     <div class="overlay-container">
         <div class="overlay">

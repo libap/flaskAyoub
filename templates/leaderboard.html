@@ -58,33 +58,25 @@
     }
 </style>
 
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Leaderboard</title>
+    <link rel="stylesheet" href="path/to/your/css">
+</head>
 
 <body>
     <div class="leaderboard">
-        <h1>
-            Joueurs les plus actifs
-        </h1>
+        <h1>Joueurs les plus actifs</h1>
         <ol>
+            {% for player in leaderboard %}
             <li>
-                <div class="name">Jerry Wood</div>
-                <div class="score">315</div>
+                <div class="name">{{ player[0] }}</div>
+                <div class="score">{{ player[1] }}</div>
             </li>
-            <li>
-                <div class="name">Brandon Barnes</div>
-                <div class="score">301</div>
-            </li>
-            <li>
-                <div class="name">Raymond Knight</div>
-                <div class="score">292</div>
-            </li>
-            <li>
-                <div class="name">Trevor McCormick</div>
-                <div class="score">245</div>
-            </li>
-            <li>
-                <div class="name">Andrew Fox</div>
-                <div class="score">203</div>
-            </li>
+            {% endfor %}
         </ol>
     </div>
 </body>
