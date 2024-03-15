@@ -90,6 +90,12 @@ def create_db():
     except Exception as e:
         return str(e)
 
+def is_user_logged_in():
+    # Vérifie si 'user_id' est présent dans la session
+    if 'user_id' in session:
+        # Si l'utilisateur est connecté, renvoyer vers la page 'landing.html'
+        return True
+
 
 @app.route('/')
 def hello_world():
@@ -97,28 +103,24 @@ def hello_world():
 
 @app.route('/homepage')
 def homepage():
+    if is_user_logged_in() != True:
+        render_template('landing.html')
+
+
     if 'points' not in session:
         session['points'] = 0
     if 'used_questions' not in session:
         session['used_questions'] = []
-
-    if 'scorefinal' not in session:
-       session['scorefinal'] = 0
-    else:
-        scorefinal = session['scorefinal']
-
-        
+    session['scorefinal'] = 0
     
-    
-        
 
-        
-    return render_template('homepage.html', scorefinal=session['scorefinal'])
+    return render_template('homepage.html')
 
 
 
 @app.route('/game')
 def quiz():
+    is_user_logged_in()
     if 'used_questions' not in session:
         session['used_questions'] = []
 
@@ -153,12 +155,12 @@ def quiz():
 
 
         if 'points' in session:
-            
+            session['scorefinal'] = points
             session['points'] = 0
         if 'used_questions'  in session:
             session['used_questions'] = []
         
-        return redirect(url_for('homepage'))
+        return redirect(url_for('finalresults'))
 
     # Choisir un ID au hasard parmi ceux restants
     question_id = random.choice(available_questions)
@@ -178,6 +180,7 @@ def quiz():
 
 @app.route('/checkanswer', methods=['POST'])
 def check_answer():
+    is_user_logged_in()
     selected_answer = request.form.get('answer')
 
 
@@ -197,10 +200,6 @@ def check_answer():
 
         if result[0] == 1:  # Si la réponse est correcte
             session['points'] += 10  # Ajouter un point
-            session['scorefinal'] += 10  # Ajouter un point
-            print('---------------------------------')
-            print(session['scorefinal'])
-            print('---------------------------------')
 
 
             return render_template('goodresult.html')
@@ -216,17 +215,20 @@ def check_answer():
 
 @app.route('/goodresult')
 def goodresult():
+    is_user_logged_in()
     return render_template('goodresult.html')
 
 @app.route('/badresult')
 def badresult():
+    is_user_logged_in()
     return render_template('badresult.html')
 
 @app.route('/leaderboard')
 def leaderboard():
+    is_user_logged_in()
     db = sqlite3.connect('quiz_app.db')
     cursor = db.cursor()
-    cursor.execute('SELECT pseudo, best_score FROM users ORDER BY best_score DESC LIMIT 5')
+    cursor.execute('SELECT pseudo, best_score FROM users ORDER BY best_score DESC LIMIT 20')
     leaderboard_data = cursor.fetchall()
     db.close()
     return render_template('leaderboard.html', leaderboard=leaderboard_data)
@@ -235,7 +237,9 @@ def leaderboard():
 
 @app.route('/finalresults')
 def finalresults():
-    return render_template('finalresults.html')
+    is_user_logged_in()
+    
+    return render_template('finalresults.html', scorefinal=session['scorefinal'])
 
 
 
@@ -246,6 +250,7 @@ def finalresults():
 
 @app.route('/logout')
 def logout():
+    is_user_logged_in()
     session.clear()
     return render_template('landing.html')
 
