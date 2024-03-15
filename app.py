@@ -101,10 +101,19 @@ def homepage():
         session['points'] = 0
     if 'used_questions' not in session:
         session['used_questions'] = []
+
+    if 'scorefinal' not in session:
+       session['scorefinal'] = 0
+    else:
+        scorefinal = session['scorefinal']
+
         
-    scorefinal = session['scorefinal']
+    
+    
         
-    return render_template('homepage.html', scorefinal=scorefinal)
+
+        
+    return render_template('homepage.html', scorefinal=session['scorefinal'])
 
 
 
@@ -141,14 +150,15 @@ def quiz():
         
         db.close()
 
-        scorefinal = session['scorefinal']
-        session['scorefinal'] = session['points']
+
+
         if 'points' in session:
+            
             session['points'] = 0
         if 'used_questions'  in session:
             session['used_questions'] = []
         
-        return render_template('homepage.html')
+        return redirect(url_for('homepage'))
 
     # Choisir un ID au hasard parmi ceux restants
     question_id = random.choice(available_questions)
@@ -186,7 +196,13 @@ def check_answer():
             session.modified = True  # Important pour les modifications de list/dict dans session
 
         if result[0] == 1:  # Si la réponse est correcte
-            session['points'] += 1  # Ajouter un point
+            session['points'] += 10  # Ajouter un point
+            session['scorefinal'] += 10  # Ajouter un point
+            print('---------------------------------')
+            print(session['scorefinal'])
+            print('---------------------------------')
+
+
             return render_template('goodresult.html')
         else:
             return render_template('badresult.html')
