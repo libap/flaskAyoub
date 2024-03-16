@@ -85,7 +85,7 @@ def init_db():
 def create_db():
     try:
         init_db()
-        return "La base de données a été initialisée avec succès."
+        return "The database has been successfully initialized."
     except Exception as e:
         return str(e)
 def is_user_logged_in():
@@ -346,8 +346,8 @@ if __name__ == '__main__':
 
 #To set up the database, visit the /initdb endpoint.
 
-#To register or sign in, go directly to the homepage at /.
+#Then to register or sign in, go directly to the homepage at /.
 
 #Access the /homepage to start playing the game.
 
-#Note: This implementation does not include password hashing or optimal code practices, such as a dedicated function for database connections.
+#Note: This implementation does not include password hashing or optimal code practices, such as a dedicated function for database connections, clean database creation system with sql file.
