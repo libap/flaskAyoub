@@ -6,12 +6,11 @@ app = Flask(__name__)
 app.secret_key = 'votre_cle_secrete'  
 
 
-
 def init_db():
     db = sqlite3.connect('quiz_app.db')
     cursor = db.cursor()
 
-    # Création des tables
+    # Creating tables
     cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -38,9 +37,9 @@ def init_db():
         );
     ''')
 
-    # Insertion de données d'exemple
+    # Inserting example data
 
-    # Utilisateurs
+    # Users
     users = [
         ('Alice', 'password123', 10),
         ('Bob', 'securepwd', 20),
@@ -50,18 +49,18 @@ def init_db():
 
     # Questions
     questions = [
-        ("Quelle est la capitale de la France ?",),
-        ("Combien de continents y a-t-il ?",),
-        ("Qui a peint la Joconde ?",)
+        ("What is the capital of France?",),
+        ("How many continents are there?",),
+        ("Who painted the Mona Lisa?",)
     ]
     cursor.executemany('INSERT INTO questions (question_text) VALUES (?)', questions)
 
-    # Récupérer les IDs des questions insérées pour les utiliser dans les réponses
+    # Retrieve the IDs of the inserted questions to use them in the answers
     cursor.execute('SELECT id FROM questions')
     question_ids = cursor.fetchall()
 
-    # Réponses
-    # Assurez-vous que les question_id correspondent aux ID réels des questions que vous avez insérées
+    # Answers
+    # Make sure the question_id matches the actual IDs of the questions you inserted
     answers = [
         (question_ids[0][0], "Paris", True),
         (question_ids[0][0], "Lyon", False),
@@ -82,7 +81,6 @@ def init_db():
     db.close()
 
 
-
 @app.route('/initdb', methods=['GET'])
 def create_db():
     try:
@@ -90,14 +88,11 @@ def create_db():
         return "La base de données a été initialisée avec succès."
     except Exception as e:
         return str(e)
-
 def is_user_logged_in():
-    # Vérifie si 'user_id' est présent dans la session
+    # Checks if 'user_id' is present in the session
     if 'user_id' in session:
-        # Si l'utilisateur est connecté, renvoyer vers la page 'landing.html'
+        # If the user is logged in
         return True
-        
-
 
 @app.route('/')
 def hello_world():
@@ -105,31 +100,27 @@ def hello_world():
 
 @app.route('/homepage')
 def homepage():
-    if is_user_logged_in() != True:
+    if not is_user_logged_in():
         print('------------------------------')
-        #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        # print(session['user_id'])
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
         return render_template('landing.html')
-
 
     if 'points' not in session:
         session['points'] = 0
     if 'used_questions' not in session:
         session['used_questions'] = []
-    session['scorefinal'] = 0
-    
+    session['final_score'] = 0
 
     return render_template('homepage.html')
 
-
-
 @app.route('/game')
 def quiz():
-    if is_user_logged_in() != True:
+    if not is_user_logged_in():
         print('------------------------------')
-        #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        # print(session['user_id'])
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
         return render_template('landing.html')
 
@@ -139,22 +130,22 @@ def quiz():
     db = sqlite3.connect('quiz_app.db')
     cursor = db.cursor()
 
-    # Récupérer tous les IDs de questions disponibles
+    # Retrieve all available question IDs
     cursor.execute('SELECT id FROM questions')
     all_question_ids = [row[0] for row in cursor.fetchall()]
 
-    # Filtrer ceux déjà utilisés
+    # Filter out those already used
     available_questions = [q_id for q_id in all_question_ids if q_id not in session['used_questions']]
 
     if not available_questions:
-        # Si toutes les questions ont été utilisées, vous pourriez rediriger l'utilisateur ou afficher un message
+        # If all questions have been used, you could redirect the user or display a message
         user_id = session['user_id']
         points = session['points']
         
         db = sqlite3.connect('quiz_app.db')
         cursor = db.cursor()
         
-        # Ici, vous pourriez vouloir mettre à jour le score seulement s'il est supérieur au meilleur score précédent
+        # Here, you might want to update the score only if it's higher than the previous best score
         cursor.execute('SELECT best_score FROM users WHERE id = ?', (user_id,))
         best_score = cursor.fetchone()[0]
         
@@ -165,7 +156,6 @@ def quiz():
         db.close()
 
 
-
         if 'points' in session:
             session['scorefinal'] = points
             session['points'] = 0
@@ -174,12 +164,12 @@ def quiz():
         
         return redirect(url_for('finalresults'))
 
-    # Choisir un ID au hasard parmi ceux restants
+ # Choose a random ID from those remaining
     question_id = random.choice(available_questions)
     session['used_questions'].append(question_id)
-    session.modified = True  # Assurez-vous de marquer la session comme modifiée
+    session.modified = True  # Make sure to mark the session as modified
 
-    # Récupérer la question sélectionnée et ses réponses
+    # Retrieve the selected question and its answers
     cursor.execute('SELECT question_text FROM questions WHERE id = ?', (question_id,))
     question_text = cursor.fetchone()[0]
     
@@ -195,7 +185,7 @@ def check_answer():
     if is_user_logged_in() != True:
         print('------------------------------')
         #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
         return render_template('landing.html')
 
@@ -205,27 +195,29 @@ def check_answer():
 
     db = sqlite3.connect('quiz_app.db')
     cursor = db.cursor()
-    # Modifier la requête pour récupérer aussi l'ID de la question
+    # Modify the query to also retrieve the question ID
+ 
     cursor.execute('SELECT is_correct, question_id FROM answers WHERE id = ?', (selected_answer,))
     result = cursor.fetchone()
     db.close()
 
     if result:
-        question_id = result[1]  # Récupérer l'ID de la question
+        question_id = result[1]  # Retrieve the question ID
         if question_id not in session['used_questions']:
             session['used_questions'].append(question_id)
-            session.modified = True  # Important pour les modifications de list/dict dans session
+            session.modified = True  # Important for modifications to lists/dicts in session
 
-        if result[0] == 1:  # Si la réponse est correcte
-            session['points'] += 20  # Ajouter un point
+        if result[0] == 1:  # If the answer is correct
+            session['points'] += 20  # Add 20 points to the user's score
 
 
             return render_template('goodresult.html')
         else:
             return render_template('badresult.html')
     else:
-        # Gérer le cas où la requête ne retourne pas de résultat (p. ex., réponse invalide)
-        return "Erreur : Réponse non trouvée."
+        # Handle the case where the query returns no result (e.g., invalid answer)
+        return "Error: Answer not found."
+        return "Error: Answer not found."
 
 
 
@@ -236,7 +228,7 @@ def goodresult():
     if is_user_logged_in() != True:
         print('------------------------------')
         #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
 
         return render_template('landing.html')
@@ -247,7 +239,7 @@ def badresult():
     if is_user_logged_in() != True:
         print('------------------------------')
         #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
         return render_template('landing.html')
     return render_template('badresult.html')
@@ -257,7 +249,7 @@ def leaderboard():
     if is_user_logged_in() != True:
         print('------------------------------')
         #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
         return render_template('landing.html')
     db = sqlite3.connect('quiz_app.db')
@@ -274,7 +266,7 @@ def finalresults():
     if is_user_logged_in() != True:
         print('------------------------------')
         #print(session['user_id'])
-        print('personne n\'est connecté retour à la page de connexion')
+        print('No one is logged in, redirecting to the login page')
         print('------------------------------')
         return render_template('landing.html')
 
@@ -299,26 +291,26 @@ def logout():
 def createaccount():
     if request.method == 'POST':
         username = request.form['username']
-        password = request.form['password']  # Dans un cas réel, vous devriez hasher ce mot de passe avant de le stocker
+        password = request.form['password']  # In a real case, you should hash this password before storing it
         db = sqlite3.connect('quiz_app.db')
         cursor = db.cursor()
         
-        # Insérer le nouvel utilisateur
+          # Insert new user
         cursor.execute('INSERT INTO users (pseudo, password) VALUES (?, ?)', (username, password))
         db.commit()
         
-        # Récupérer l'ID du nouvel utilisateur
+        # Retrieve new user ID
         cursor.execute('SELECT id FROM users WHERE pseudo = ?', (username,))
         user_id = cursor.fetchone()[0]
         
         db.close()
         
-        # Stocker l'ID de l'utilisateur dans la session
+          # Store user ID in session
         session['user_id'] = user_id
         
         return redirect(url_for('homepage'))
     else:
-        return render_template('landing.html')  # Afficher le formulaire d'inscription
+        return render_template('landing.html')  #  Display registration form
 
 
 
@@ -336,13 +328,26 @@ def login():
         db.close()
         
         if user:
-            session['user_id'] = user[0]  # Utiliser l'ID de l'utilisateur pour la session
+            session['user_id'] = user[0]  # Use user ID for session
+     
             return redirect(url_for('homepage'))
         else:
             flash('Nom d’utilisateur ou mot de passe incorrect.', 'error')
-    # Si la méthode n'est pas POST ou si la connexion échoue, afficher à nouveau le formulaire
-    return render_template('landing.html')
+     # If the method is not POST or if the connection fails, display the form again
 
+    return render_template('landing.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+#Comments
+
+#Launching the program is as simple as running the app.py file.
+
+#To set up the database, visit the /initdb endpoint.
+
+#To register or sign in, go directly to the homepage at /.
+
+#Access the /homepage to start playing the game.
+
+#Note: This implementation does not include password hashing or optimal code practices, such as a dedicated function for database connections.
