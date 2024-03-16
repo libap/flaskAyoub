@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS answers (
     FOREIGN KEY(question_id) REFERENCES questions(id)
 );
 
--- Insertion de données d'exemple
+-- Data insertion for testing
 
--- Utilisateurs
+-- Users
 INSERT INTO users (pseudo, password, best_score) VALUES 
 ('Alice', 'password123', 10),
 ('Bob', 'securepwd', 20),
@@ -33,9 +33,9 @@ INSERT INTO questions (question_text) VALUES
 ('Combien de continents y a-t-il ?'),
 ('Qui a peint la Joconde ?');
 
--- Réponses
--- Note: Les question_id utilisés ici sont supposés correspondre aux ID réels.
--- Dans un scénario réel, assurez-vous que les IDs correspondent ou ajustez-les en conséquence.
+-- Answers
+-- Note: The question_ids used here are assumed to correspond to the actual IDs.
+-- In a real scenario, make sure the IDs match or adjust them accordingly.
 INSERT INTO answers (question_id, answer_text, is_correct) VALUES 
 (1, 'Paris', 1),
 (1, 'Lyon', 0),
