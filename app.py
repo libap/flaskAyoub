@@ -3,8 +3,7 @@ import random
 import sqlite3
 
 app = Flask(__name__)
-app.secret_key = 'votre_cle_secrete'  # Nécessaire pour utiliser les sessions
-
+app.secret_key = 'votre_cle_secrete'  
 
 
 
@@ -82,6 +81,8 @@ def init_db():
     db.commit()
     db.close()
 
+
+
 @app.route('/initdb', methods=['GET'])
 def create_db():
     try:
@@ -95,6 +96,7 @@ def is_user_logged_in():
     if 'user_id' in session:
         # Si l'utilisateur est connecté, renvoyer vers la page 'landing.html'
         return True
+        
 
 
 @app.route('/')
@@ -104,7 +106,11 @@ def hello_world():
 @app.route('/homepage')
 def homepage():
     if is_user_logged_in() != True:
-        render_template('landing.html')
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+        return render_template('landing.html')
 
 
     if 'points' not in session:
@@ -120,7 +126,13 @@ def homepage():
 
 @app.route('/game')
 def quiz():
-    is_user_logged_in()
+    if is_user_logged_in() != True:
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+        return render_template('landing.html')
+
     if 'used_questions' not in session:
         session['used_questions'] = []
 
@@ -180,7 +192,13 @@ def quiz():
 
 @app.route('/checkanswer', methods=['POST'])
 def check_answer():
-    is_user_logged_in()
+    if is_user_logged_in() != True:
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+        return render_template('landing.html')
+
     selected_answer = request.form.get('answer')
 
 
@@ -199,7 +217,7 @@ def check_answer():
             session.modified = True  # Important pour les modifications de list/dict dans session
 
         if result[0] == 1:  # Si la réponse est correcte
-            session['points'] += 10  # Ajouter un point
+            session['points'] += 20  # Ajouter un point
 
 
             return render_template('goodresult.html')
@@ -215,17 +233,33 @@ def check_answer():
 
 @app.route('/goodresult')
 def goodresult():
-    is_user_logged_in()
+    if is_user_logged_in() != True:
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+
+        return render_template('landing.html')
     return render_template('goodresult.html')
 
 @app.route('/badresult')
 def badresult():
-    is_user_logged_in()
+    if is_user_logged_in() != True:
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+        return render_template('landing.html')
     return render_template('badresult.html')
 
 @app.route('/leaderboard')
 def leaderboard():
-    is_user_logged_in()
+    if is_user_logged_in() != True:
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+        return render_template('landing.html')
     db = sqlite3.connect('quiz_app.db')
     cursor = db.cursor()
     cursor.execute('SELECT pseudo, best_score FROM users ORDER BY best_score DESC LIMIT 20')
@@ -237,7 +271,13 @@ def leaderboard():
 
 @app.route('/finalresults')
 def finalresults():
-    is_user_logged_in()
+    if is_user_logged_in() != True:
+        print('------------------------------')
+        #print(session['user_id'])
+        print('personne n\'est connecté retour à la page de connexion')
+        print('------------------------------')
+        return render_template('landing.html')
+
     
     return render_template('finalresults.html', scorefinal=session['scorefinal'])
 
